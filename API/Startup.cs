@@ -24,6 +24,7 @@ namespace API
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         private readonly IConfiguration _config;
         public Startup(IConfiguration config)
         {
@@ -34,14 +35,22 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationServices(_config);
+            services.AddCors(options =>
+                    {
+                        options.AddPolicy(name: MyAllowSpecificOrigins,
+                                        builder =>
+                                        {
+                                            builder.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+                                        });
+                    });
+
             services.AddControllers();
-            services.AddCors();
             services.AddIdentityServices(_config);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
-                    
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +67,8 @@ namespace API
 
             app.UseRouting();
 
-            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+            app.UseCors(MyAllowSpecificOrigins);
+            // app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 
             app.UseAuthentication();
             app.UseAuthorization();
