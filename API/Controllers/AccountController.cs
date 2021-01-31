@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,9 +55,9 @@ namespace API.Controllers
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var ComputeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
 
-            for (int i = 0; i < ComputeHash.Length; i++)
+            if (ComputeHash.Where((t, i) => t != user.PasswordHash[i]).Any())
             {
-                if (ComputeHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
+                return Unauthorized("Invalid password");
             }
 
             return new UserDto {
