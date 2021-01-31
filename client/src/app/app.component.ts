@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { User } from './_models/user';
-import { AccountService } from './_services/account.service';
+import {HttpClient} from '@angular/common/http';
+import {Component, OnInit} from '@angular/core';
+import {User} from './_models/user';
+import {AccountService} from './_services/account.service';
 
 @Component({
   selector: 'app-root',
@@ -9,28 +9,28 @@ import { AccountService } from './_services/account.service';
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'The Dating app';
   users: any;
 
-  constructor(private http:HttpClient, private accountService: AccountService) {
+  constructor(private http: HttpClient, private accountService: AccountService) {
   }
 
-  ngOnInit(): void{
+  ngOnInit(): void {
     this.getUsers();
-    this.setCurrentUser()
+    this.setCurrentUser();
   }
 
-  setCurrentUser(){
-    const user:User = JSON.parse(localStorage.getItem('user')|| '')
-    this.accountService.setCurrentUser(user)
+  setCurrentUser(): void {
+    const user: User = JSON.parse(localStorage.getItem('user') || '');
+    this.accountService.setCurrentUser(user);
   }
 
-  getUsers(){
-    this.http.get('https://localhost:5001/api/users').subscribe(reponse => {
-      this.users = reponse;
-    }, error =>{
-      console.log(error)
+  getUsers(): void {
+    this.http.get('https://localhost:5001/api/users').subscribe(response => {
+      this.users = response;
+    }, error => {
+      console.log(error);
     });
   }
 }
