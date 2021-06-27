@@ -17,6 +17,7 @@
     "target": "es2015",
     "module": "es2020",
     "strictPropertyInitialization": false,
+    "strictNullChecks": false,
     "lib": [
       "es2019",
       "es2018",
@@ -24,8 +25,9 @@
     ]
   },
   "angularCompilerOptions": {
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false,
+    "strictNullChecks": false
   }
 }
