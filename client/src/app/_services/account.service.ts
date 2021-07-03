@@ -4,6 +4,7 @@ import {ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {User} from '../_models/user';
 import {environment} from '../../environments/environment';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class AccountService {
   private currentUserSource = new ReplaySubject<User>(1);
   currentUser$ = this.currentUserSource.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
   }
 
   login(model: any): any {
@@ -49,5 +50,6 @@ export class AccountService {
   logout(): void {
     localStorage.removeItem('user');
     this.currentUserSource.next(undefined);
+    this.router.navigate(['/']);
   }
 }

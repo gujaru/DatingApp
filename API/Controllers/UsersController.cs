@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace API.Controllers
 {
@@ -29,10 +31,19 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<MemberDto>> GetUsers()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-            var usersToReturn = _userRepository.GetMembersAsync();
-            return await usersToReturn;
+            var user = await _userRepository.GetUserByUserNameAsync(User.GetUsername());
+            userParams.CurrentUsername = User.GetUsername();
+            if (string.IsNullOrEmpty(userParams.Gender))
+                userParams.Gender = user.Gender == "male" ? "female" : "male";
+
+            var usersToReturn = await _userRepository.GetMembersAsync(userParams);
+            Response.AddPaginationHeader(usersToReturn.CurrentPage,
+                usersToReturn.PageSize,
+                usersToReturn.TotalCount,
+                usersToReturn.TotalPage);
+            return Ok(usersToReturn);
         }
 
         [HttpGet("{username}", Name = "GetUser")]
@@ -110,6 +121,7 @@ namespace API.Controllers
                 var result = await _photoService.DeletePhotoAsync(photo.PublicId);
                 if (result.Error != null) return BadRequest(result.Error.Message);
             }
+
             user.Photos.Remove(photo);
             if (await _userRepository.SaveAllAsync()) return Ok();
             return BadRequest("Failed to delete the photo");
