@@ -1,10 +1,5 @@
 import {Injectable} from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {NavigationExtras, Router} from '@angular/router';
@@ -25,13 +20,16 @@ export class ErrorInterceptor implements HttpInterceptor {
               if (error.error && error.error.errors) {
                 const errors = error.error.errors;
                 const modalStateErrors = [];
-                for (const key in errors) { if (errors[key]) {
-                    modalStateErrors.push(errors[key])
+                for (const key in errors) {
+                  if (errors[key]) {
+                    modalStateErrors.push(errors[key]);
                   }
                 }
                 throw modalStateErrors.flat();
-              } else{
+              } else if (typeof (error.error) === 'object') {
                 this.toastr.error(error.statusText, error.status);
+              }else{
+                this.toastr.error(error.error, error.status);
               }
               break;
             case 401:
@@ -41,7 +39,7 @@ export class ErrorInterceptor implements HttpInterceptor {
               this.router.navigateByUrl('/not-found');
               break;
             case 500:
-              const navigationExtras:NavigationExtras = { state : {error: error.error}}
+              const navigationExtras: NavigationExtras = {state: {error: error.error}};
               this.router.navigateByUrl('/server-error', navigationExtras);
               break;
             default:

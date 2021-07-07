@@ -3,8 +3,6 @@ import {Member} from '../../_models/member';
 import {MembersService} from '../../_services/members.service';
 import {Pagination} from '../../_models/pagination';
 import {UserParams} from '../../_models/userParams';
-import {AccountService} from '../../_services/account.service';
-import {take} from 'rxjs/operators';
 import {User} from '../../_models/user';
 
 @Component({
